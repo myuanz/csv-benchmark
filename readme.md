@@ -3,11 +3,13 @@
 ## 准备
 
 ```
+set VCPKG_DEFAULT_TRIPLET = x64-windows
 .\vcpkg\vcpkg install celero fast-cpp-csv-parser rapidcsv
 ```
 
-## RUN
+## 运行
 
+运行吧
 
 ## 结果
 
