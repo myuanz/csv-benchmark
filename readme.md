@@ -26,3 +26,28 @@ Timer resolution: 0.100000 us
 |CSVTEST         | RAPIDCSV        |            Null |               3 |               3 | SEH exception Unknown exception code.
 Completed in 00:02:05.977905
 ```
+
+另，对于Python如下代码有：
+```python
+import mmap
+import time
+import ctypes
+
+t = time.time()
+f = open(r"C:/Users/myuan/source/repos/csv-test/COX3.txt", "r")
+
+mm = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
+
+res = ctypes.c_uint64(0)
+
+while line := mm.readline():
+    x, y, UMI_count = line.decode('utf-8').split('\t')
+    res.value += int(x)
+
+print(time.time() - t, res)
+
+```
+
+```
+17.071086168289185 c_ulonglong(831502993036)
+```
