@@ -5,13 +5,13 @@
 #include <iostream>
 #include <celero/Celero.h>
 #include <random>
-#include <assert.h>
+#include <cassert>
 #include <string>
 #include <regex>
 
 #include "vince-csv-parser.h"
 #include <csv.h>
-#include "rapidcsv.h"
+#include <rapidcsv.h>
 #include <boost/iostreams/device/mapped_file.hpp>
 
 using std::string;
