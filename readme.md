@@ -4,7 +4,7 @@
 
 ```
 set VCPKG_DEFAULT_TRIPLET = x64-windows
-.\vcpkg\vcpkg install celero fast-cpp-csv-parser rapidcsv boost-iostreams
+.\vcpkg\vcpkg install celero fast-cpp-csv-parser rapidcsv boost-iostreams folly
 ```
 
 ## 运行

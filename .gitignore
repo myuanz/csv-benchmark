@@ -1,5 +1,8 @@
 .vs
+.vscode
 Debug
 Release
 x64
 COX3.txt
+debug.log
+*.pdb
