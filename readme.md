@@ -69,3 +69,8 @@ print(time.time() - t, res)
 
 - 代码未考虑OMP切分折行
 - 代码未考虑工程化
+
+## TODO
+
+- [ ] 测试Lex/Yacc解析器的性能
+- [ ] 一个CSV解析器生成器，直接生成C++的CSV解析器代码
