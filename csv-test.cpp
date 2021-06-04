@@ -23,7 +23,7 @@ using std::string;
 
 
 const char CSV_FILE_PATH[] = "COX3.txt";
-const char CSV_FILE_WITH_CHAR_PATH[] = "V:/monkeyData/T33/T33-s.txt";
+const char CSV_FILE_WITH_CHAR_PATH[] = "V:/monkeyData/T33/T33.txt";
 
 
 // CELERO_MAIN
@@ -87,8 +87,8 @@ BASELINE(CSVTEST, Baseline, 3, 3) {
     }
     assert(res == 831502993036);
 }
-BENCHMARK(CSVTEST, NAIVE_WITH_COMP, 3, 3) {
-    const int thread_count = 16;
+BENCHMARK(CSVTEST, NAIVE_WITH_COMP, 1, 1) {
+    const int thread_count = 32;
 
     omp_set_num_threads(thread_count);
 
@@ -175,8 +175,11 @@ BENCHMARK(CSVTEST, NAIVE_WITH_COMP, 3, 3) {
 #pragma omp critical
         {
             genes.insert(inner_genes.begin(), inner_genes.end());
+            m_numLines += inner_m_numLines;
+            std::cout << m_numLines << std::endl;
         }
     }
+
 }
 BENCHMARK(CSVTEST, NAIVE_WITH_CHAR, 3, 3) {
     boost::iostreams::mapped_file mmap(CSV_FILE_WITH_CHAR_PATH, boost::iostreams::mapped_file::readonly);
@@ -249,7 +252,7 @@ BENCHMARK(CSVTEST, NAIVE_WITH_CHAR, 3, 3) {
 
 
 BENCHMARK(CSVTEST, NAIVE_WITH_OMP, 5, 5) {
-    const int thread_count = 16;
+    const int thread_count = 32;
 
     omp_set_num_threads(thread_count);
     boost::iostreams::mapped_file mmap("COX3.txt", boost::iostreams::mapped_file::readonly);
