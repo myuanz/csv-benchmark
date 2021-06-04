@@ -87,9 +87,98 @@ BASELINE(CSVTEST, Baseline, 3, 3) {
     }
     assert(res == 831502993036);
 }
+BENCHMARK(CSVTEST, NAIVE_WITH_COMP, 3, 3) {
+    const int thread_count = 16;
 
-BENCHMARK(CSVTEST, NAIVE_WITH_CHAR, 5, 5)
-{
+    omp_set_num_threads(thread_count);
+
+    boost::iostreams::mapped_file mmap(CSV_FILE_WITH_CHAR_PATH, boost::iostreams::mapped_file::readonly);
+    auto f = mmap.const_data() + sizeof("geneID\tx\ty\tUMICount");
+    auto last_pos = f;
+
+    auto l = f + mmap.size();
+
+    std::unordered_set<::folly::fbstring> genes;
+    uint64_t res = 0;
+    uintmax_t m_numLines = 0;
+
+#pragma omp parallel for
+    for (int start_i = 0; start_i < thread_count; start_i++) {
+        decltype(f) start = f + mmap.size() * start_i / thread_count; 
+        decltype(f) end;
+
+        if (start_i == thread_count - 1) {
+            end = l;
+        } else {
+            end = start + mmap.size() / thread_count;
+        }
+
+        uint64_t inner_res = 0;
+        uint16_t x = 0, y = 0, UMI_count = 0;
+        uintmax_t inner_m_numLines = 0;
+
+        int current_col = 0;
+
+        std::unordered_set<::folly::fbstring> inner_genes;
+        ::folly::fbstring* current_gene = new ::folly::fbstring("");
+
+        while (start && start != end) {
+
+            switch (*start) {
+            case '\t':
+                switch (current_col) {
+                case 0:
+                    if (!inner_genes.contains(*current_gene)) {
+                        inner_genes.insert(*current_gene);
+                    }
+                    delete current_gene;
+                    current_gene = new ::folly::fbstring("");
+                    break;
+                case 1:
+                    res += x;
+                    x = 0;
+                    break;
+                case 2:
+                    y = 0;
+                    break;
+                case 3:
+                    UMI_count = 0;
+                    break;
+                }
+                current_col++;
+                break;
+            case '\n':
+                current_col = 0;
+                inner_m_numLines++;
+                break;
+            default:
+                switch (current_col) {
+                case 0:
+                    current_gene->push_back(*start);
+                    break;
+                case 1:
+                    x = x * 10 + (*start - '0');
+                    break;
+                case 2:
+                    y = y * 10 + (*start - '0');
+                    break;
+                case 3:
+                    UMI_count = UMI_count * 10 + *start - '0';
+                    break;
+                default:
+                    break;
+                }
+                break;
+            }
+            start++;
+        }
+#pragma omp critical
+        {
+            genes.insert(inner_genes.begin(), inner_genes.end());
+        }
+    }
+}
+BENCHMARK(CSVTEST, NAIVE_WITH_CHAR, 3, 3) {
     boost::iostreams::mapped_file mmap(CSV_FILE_WITH_CHAR_PATH, boost::iostreams::mapped_file::readonly);
     auto f = mmap.const_data() + sizeof("geneID\tx\ty\tUMICount");
     auto last_pos = f;
@@ -157,8 +246,10 @@ BENCHMARK(CSVTEST, NAIVE_WITH_CHAR, 5, 5)
         f++;
     }
 }
-BENCHMARK(CSVTEST, NAIVE_WITH_OPENMP, 5, 5) {
-    const int thread_count = 32;
+
+
+BENCHMARK(CSVTEST, NAIVE_WITH_OMP, 5, 5) {
+    const int thread_count = 16;
 
     omp_set_num_threads(thread_count);
     boost::iostreams::mapped_file mmap("COX3.txt", boost::iostreams::mapped_file::readonly);
@@ -227,8 +318,11 @@ BENCHMARK(CSVTEST, NAIVE_WITH_OPENMP, 5, 5) {
             }
             start++;
         }
-        res += inner_res;
-        m_numLines += inner_m_numLines;
+#pragma omp critical 
+        {
+            res += inner_res;
+            m_numLines += inner_m_numLines;
+        }
     }
     assert(res == 831502993036);
 
