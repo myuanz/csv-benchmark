@@ -31,8 +31,8 @@ Timer resolution: 0.100000 us
 |:--------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|
 |CSVTEST         | Baseline        |            Null |               3 |               3 |         1.00000 |    670740.00000 |            1.49 |          774144 |
 |CSVTEST         | NAIVE_WITH_OMP  |            Null |               5 |               5 |         0.24368 |    163444.00000 |            6.12 |         2379776 |
-|CSVTEST         | NAIVE_WITH_COMP |            Null |               3 |               3 |         0.81300 |    545310.66667 |            1.83 |         2109440 |
 |CSVTEST         | NAIVE_WITH_CHAR |            Null |               3 |               3 |         2.05309 |   1377089.66667 |            0.73 |         2379776 |
+|CSVTEST         | NAIVE_WITH_COMP |            Null |               3 |               3 |         0.81300 |    545310.66667 |            1.83 |         2109440 |
 |CSVTEST         | VINCE_CSV       |            Null |               3 |               3 |         9.49166 |   6366433.66667 |            0.16 |         6524928 |
 |CSVTEST         | FAST_CSV_PARSER |            Null |               3 |               3 |         2.27451 |   1525607.66667 |            0.66 |         6524928 |
 |CSVTEST         | RAPIDCSV        |            Null |               3 |               3 | SEH exception Unknown exception code.
